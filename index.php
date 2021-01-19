@@ -1,101 +1,53 @@
 <?php
 
-class Persona
-{
-    public $nome;
-    public $cognome;
-    public $codice_fiscale;
+require_once('persona.php');
+require_once('impiegato.php');
+require_once('impiegato-salariato.php');
+require_once('impiegato-commissione.php');
 
-    public function __construct($nome, $cognome, $codice_fiscale) {
-        $this->nome = $nome;
-        $this->cognome = $cognome;
-        $this->codice_fiscale = $codice_fiscale;
-    }
+$data = [
+    'nome' => 'Pinco',
+    //'cognome' => 'Pallino',
+    'codice_fiscale' => 'PP87',
+    'codice_impiegato' => '000000'
+];
 
-    public function to_string() {
-        foreach ($this as $key => $value) {
-            print "$key : $value";
-            print "<br>";
-        }
-    }
+$persona = new Persona('Enrico', 'Olivieri', 'EO95');
+
+try {
+    $impiegato = new Impiegato($data);
+} catch (Exception $e){
+    echo $e->getMessage();
 }
 
-class Impiegato extends Persona
-{
-    public $codice_impiegato;
-    public $compenso;
+$data_s = array_merge($data, [
+    'giorni_lavorati' => 10,
+    'compenso_giornaliero' => 100
+]);
 
-    public function __construct($nome, $cognome, $codice_fiscale, $codice_impiegato, $compenso = 0)
-    {
-        parent::__construct($nome, $cognome, $codice_fiscale);
-        $this->codice_impiegato = $codice_impiegato;
-        $this->compenso = $compenso;
-    }
+$impiegato_s = new ImpiegatoSalariato($data_s);
 
-    public function calcola_compenso()
-    {
-    }
+try {
+
+    $impiegato_c = new ImpiegatoSuCommissione($data_s, 'Boolflix', 1000);
+
+} catch (Exception $e) {
+    $impiegato_c = new Impiegato($data_s);
+    echo $e->getMessage();
 }
 
-class ImpiegatoAOre extends Impiegato
-{
-    public $ore_lavorate;
-    public $compenso_orario;
-
-    public function __construct($nome, $cognome, $codice_fiscale, $codice_impiegato, $compenso_orario, $ore_lavorate)
-    {
-        parent::__construct($nome, $cognome, $codice_fiscale, $codice_impiegato, $compenso_orario);
-        $this->ore_lavorate = $ore_lavorate;
-        $this->compenso_orario = $compenso_orario;
-    }
-
-    public function calcola_compenso()
-    {
-        print($this->compenso_orario * $this->ore_lavorate);
-    }
+try {
+    $impiegato_c->fun();
+} catch (Exception $e){
+    echo $e->getMessage();
 }
-
-class ImpiegatoSalariato extends Impiegato
-{
-    public $giorni_lavorati;
-    public $compenso_giornaliero;
-
-    public function __construct($nome, $cognome, $codice_fiscale, $codice_impiegato, $compenso_giornaliero, $giorni_lavorati)
-    {
-        parent::__construct($nome, $cognome, $codice_fiscale, $codice_impiegato, $compenso_giornaliero);
-        $this->giorni_lavorati = $giorni_lavorati;
-        $this->compenso_giornaliero = $compenso_giornaliero;
-    }
-
-    public function calcola_compenso()
-    {
-        print($this->compenso_giornaliero * $this->giorni_lavorati);
-    }
-}
-
-trait Progetto
-{
-    public $nome_progetto;
-    public $commissione_progetto;
-}
-
-class ImpiegatoSuCommissione extends Impiegato
-{
-    use Progetto;
-
-    public function __construct($nome, $cognome, $codice_fiscale, $codice_impiegato, $nome_progetto, $commissione_progetto)
-    {
-        parent::__construct($nome, $cognome, $codice_fiscale, $codice_impiegato);
-        $this->nome_progetto = $nome_progetto;
-        $this->commissione_progetto = $commissione_progetto;
-    }
-
-    public function calcola_compenso()
-    {
-        print($this->commissione_progetto);
-    }
-}
-
-
 
 ?>
+
+<p> <?= $persona->to_string(); ?> </p>
+<p> <?= $impiegato->to_string(); ?> </p>
+<p> <?= $impiegato_s->to_string(); ?> </p>
+<p> <?= $impiegato_c->to_string(); ?> </p>
+
+
+
